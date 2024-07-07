@@ -1,11 +1,11 @@
 import streamlit as st
+import pandas as pd
 from datetime import datetime, timedelta
 import json
 import os
 
-# Nombre de los archivos de datos
+# Nombre del archivo de datos
 DATA_FILE = 'reservas_data.json'
-USERS_FILE = 'users.txt'
 
 # Función para cargar las reservas desde un archivo
 def cargar_reservas():
@@ -18,21 +18,6 @@ def cargar_reservas():
 def guardar_reservas(reservas):
     with open(DATA_FILE, 'w') as file:
         json.dump(reservas, file)
-
-# Función para cargar usuarios autorizados desde el archivo
-def load_users(filename=USERS_FILE):
-    users = {}
-    with open(filename, 'r') as f:
-        for line in f:
-            login, password = line.strip().split(':')
-            users[login] = password
-    return users
-
-# Función para autenticar usuarios
-def authenticate(login, password, users):
-    if login in users and users[login] == password:
-        return True
-    return False
 
 # Estructura de datos para las reservas
 reservas = cargar_reservas()
@@ -80,43 +65,30 @@ def borrar_reserva(nombre):
 # Interfaz de Streamlit
 st.set_page_config(layout="wide")
 
-# Cargar usuarios autorizados
-users = load_users()
+st.title('Sistema de Reservas')
 
-# Autenticación
-st.sidebar.title("Autenticación")
-login = st.sidebar.text_input("Login")
-password = st.sidebar.text_input("Password", type="password")
-if st.sidebar.button("Iniciar sesión"):
-    if authenticate(login, password, users):
-        st.sidebar.success("Acceso concedido.")
-        
-        st.title('Sistema de Reservas')
+opcion = st.selectbox('Selecciona una opción', ['Agregar Reserva', 'Mostrar Reservas', 'Borrar Reserva'])
 
-        opcion = st.selectbox('Selecciona una opción', ['Agregar Reserva', 'Mostrar Reservas', 'Borrar Reserva'])
+if opcion == 'Agregar Reserva':
+    nombre = st.text_input('Nombre')
+    fecha = st.date_input('Fecha')
+    hora = st.time_input('Hora', value=datetime.strptime('08:00', '%H:%M').time())
 
-        if opcion == 'Agregar Reserva':
-            nombre = st.text_input('Nombre')
-            fecha = st.date_input('Fecha')
-            hora = st.time_input('Hora', value=datetime.strptime('08:00', '%H:%M').time())
-
-            if hora < datetime.strptime('08:00', '%H:%M').time() or hora >= datetime.strptime('16:00', '%H:%M').time():
-                st.warning("Por favor seleccione una hora entre las 08:00 AM y las 03:00 PM para asegurar una duración de una hora.")
-            else:
-                if st.button('Agregar'):
-                    fecha_str = fecha.strftime('%Y-%m-%d')
-                    hora_str = hora.strftime('%H:%M')
-                    resultado = agregar_reserva(nombre, fecha_str, hora_str)
-                    st.write(resultado)
-
-        elif opcion == 'Mostrar Reservas':
-            mostrar_reservas()
-
-        elif opcion == 'Borrar Reserva':
-            nombre = st.text_input('Nombre de la reserva a borrar')
-            if st.button('Borrar'):
-                resultado = borrar_reserva(nombre)
-                st.write(resultado)
-                mostrar_reservas()
+    if hora < datetime.strptime('08:00', '%H:%M').time() or hora >= datetime.strptime('16:00', '%H:%M').time():
+        st.warning("Por favor seleccione una hora entre las 08:00 AM y las 03:00 PM para asegurar una duración de una hora.")
     else:
-        st.sidebar.error("Acceso denegado. Login o password incorrectos.")
+        if st.button('Agregar'):
+            fecha_str = fecha.strftime('%Y-%m-%d')
+            hora_str = hora.strftime('%H:%M')
+            resultado = agregar_reserva(nombre, fecha_str, hora_str)
+            st.write(resultado)
+
+elif opcion == 'Mostrar Reservas':
+    mostrar_reservas()
+
+elif opcion == 'Borrar Reserva':
+    nombre = st.text_input('Nombre de la reserva a borrar')
+    if st.button('Borrar'):
+        resultado = borrar_reserva(nombre)
+        st.write(resultado)
+        mostrar_reservas()
