@@ -1,4 +1,6 @@
 import streamlit as st
+from datetime import datetime
+import pandas as pd
 import os
 
 # Función para cargar usuarios autorizados desde el archivo
@@ -19,15 +21,18 @@ def authenticate(login, password, users):
 # Funciones de reserva
 reservas = []
 
-def agregar_reserva(reserva):
-    reservas.append(reserva)
+def agregar_reserva(nombre, fecha_hora):
+    for reserva in reservas:
+        if reserva['nombre'] == nombre and reserva['fecha_hora'] == fecha_hora:
+            st.error("La reserva ya existe.")
+            return
+    reservas.append({'nombre': nombre, 'fecha_hora': fecha_hora})
     st.success("Reserva agregada correctamente.")
 
 def mostrar_reservas():
     if reservas:
-        st.write("Reservas actuales:")
-        for reserva in reservas:
-            st.write(reserva)
+        df = pd.DataFrame(reservas)
+        st.write(df)
     else:
         st.write("No hay reservas.")
 
@@ -53,9 +58,10 @@ if st.sidebar.button("Iniciar sesión"):
         option = st.selectbox("Seleccione una opción", ["Agregar Reserva", "Mostrar Reservas", "Borrar Reservas"])
         
         if option == "Agregar Reserva":
-            reserva = st.text_input("Ingrese la reserva:")
+            nombre = st.text_input("Nombre completo:")
+            fecha_hora = st.date_input("Seleccione la fecha") + pd.to_timedelta(st.time_input("Seleccione la hora"))
             if st.button("Agregar"):
-                agregar_reserva(reserva)
+                agregar_reserva(nombre, fecha_hora)
                 
         elif option == "Mostrar Reservas":
             mostrar_reservas()
@@ -65,5 +71,3 @@ if st.sidebar.button("Iniciar sesión"):
                 borrar_reservas()
     else:
         st.sidebar.error("Acceso denegado. Login o password incorrectos.")
-
-
