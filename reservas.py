@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import os
 
@@ -59,7 +59,9 @@ if st.sidebar.button("Iniciar sesión"):
         
         if option == "Agregar Reserva":
             nombre = st.text_input("Nombre completo:")
-            fecha_hora = st.date_input("Seleccione la fecha") + pd.to_timedelta(st.time_input("Seleccione la hora"))
+            fecha = st.date_input("Seleccione la fecha")
+            hora = st.time_input("Seleccione la hora")
+            fecha_hora = datetime.combine(fecha, hora)
             if st.button("Agregar"):
                 agregar_reserva(nombre, fecha_hora)
                 
