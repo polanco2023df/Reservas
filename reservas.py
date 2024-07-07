@@ -16,7 +16,7 @@ def cargar_reservas():
 
 # Función para guardar las reservas en un archivo
 def guardar_reservas(reservas):
-    with open(DATA_FILE, 'w') as file:
+    with open(DATA_FILE, 'w') as file):
         json.dump(reservas, file)
 
 # Función para cargar usuarios autorizados desde el archivo
@@ -91,14 +91,7 @@ if st.sidebar.button("Iniciar sesión"):
     if authenticate(login, password, users):
         st.sidebar.success("Acceso concedido.")
         
-        # Cargar el logo
-        logo_izquierda = "8f2bdf63-f8ce-412e-9c57-df40744f44dd.png"  # Ruta al archivo del logo
-
-        col1, col2 = st.columns([1, 9])
-        with col1:
-            st.image(logo_izquierda, width=100)
-        with col2:
-            st.title('Sistema de Reservas')
+        st.title('Sistema de Reservas')
 
         opcion = st.selectbox('Selecciona una opción', ['Agregar Reserva', 'Mostrar Reservas', 'Borrar Reserva'])
 
