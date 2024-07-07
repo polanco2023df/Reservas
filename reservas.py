@@ -16,7 +16,7 @@ def cargar_reservas():
 
 # Función para guardar las reservas en un archivo
 def guardar_reservas(reservas):
-    with open(DATA_FILE, 'w') as file):
+    with open(DATA_FILE, 'w') as file:
         json.dump(reservas, file)
 
 # Función para cargar usuarios autorizados desde el archivo
